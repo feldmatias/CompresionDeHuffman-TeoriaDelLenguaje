@@ -14,4 +14,8 @@ impl HuffmanCompression {
             tree: HuffmanTree::new()
         };
     }
+
+    pub fn print_tree(&self) {
+        self.tree.print();
+    }
 }

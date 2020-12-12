@@ -51,4 +51,20 @@ impl HuffmanNode {
     pub fn weight(&self) -> i32 {
         return self.weight;
     }
+
+    pub fn print(&self) {
+        if self.is_leave() {
+            println!("leave: '{}' -> {}", self.letter.escape_default(), self.weight);
+        } else {
+            println!("not leave: {}", self.weight);
+            match &self.left {
+                None => {}
+                Some(node) => { node.print() }
+            }
+            match &self.right {
+                None => {}
+                Some(node) => { node.print() }
+            }
+        }
+    }
 }

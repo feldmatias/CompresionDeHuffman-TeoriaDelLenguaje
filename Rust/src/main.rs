@@ -4,5 +4,5 @@ mod huffman;
 
 fn main() {
     let huffman = HuffmanCompression::new();
-    println!("Hello, world!");
+    huffman.print_tree();
 }

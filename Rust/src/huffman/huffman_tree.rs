@@ -50,4 +50,11 @@ impl HuffmanTree {
         }
         return nodes_list;
     }
+
+    pub fn print(&self) {
+        println!("_____________");
+        println!("Huffman Tree");
+        self.root.print();
+        println!("_____________");
+    }
 }
