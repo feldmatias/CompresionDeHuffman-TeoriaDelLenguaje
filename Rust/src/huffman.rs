@@ -3,6 +3,7 @@ use crate::huffman::huffman_tree::HuffmanTree;
 mod huffman_node;
 mod nodes_list;
 mod huffman_tree;
+mod huffman_node_option2;
 
 pub struct HuffmanCompression {
     pub tree: HuffmanTree
