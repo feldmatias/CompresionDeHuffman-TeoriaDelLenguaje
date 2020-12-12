@@ -61,11 +61,11 @@ huffman_node_t *huffman_node_merge_nodes(huffman_node_t *node1, huffman_node_t *
     return new_node;
 }
 
-bool huffman_node_is_leave(huffman_node_t* node) {
+bool huffman_node_is_leave(huffman_node_t *node) {
     return node->left == NULL && node->right == NULL;
 }
 
-void huffman_node_print(huffman_node_t* node) {
+void huffman_node_print(huffman_node_t *node) {
     if (huffman_node_is_leave(node)) {
         printf("leave: '%c' -> %d\n", node->letter, node->weight);
     } else {
@@ -78,4 +78,8 @@ void huffman_node_print(huffman_node_t* node) {
     if (node->right != NULL) {
         huffman_node_print(node->right);
     }
+}
+
+int huffman_node_weight(huffman_node_t *node) {
+    return node->weight;
 }

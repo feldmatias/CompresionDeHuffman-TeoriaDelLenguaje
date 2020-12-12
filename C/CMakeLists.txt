@@ -3,4 +3,4 @@ project(C C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(C main.c huffman/huffman_node.h huffman/huffman_node.c)
+add_executable(C main.c huffman/huffman_node.h huffman/huffman_node.c huffman/nodes_list.c huffman/nodes_list.h huffman/huffman_tree.c huffman/huffman_tree.h)
