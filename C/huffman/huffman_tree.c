@@ -27,8 +27,8 @@ struct huffman_tree {
     huffman_node_t *root;
 };
 
-huffman_nodes_list_t* create_leave_nodes() {
-    huffman_nodes_list_t* list = huffman_nodes_list_create();
+huffman_nodes_list_t *create_leave_nodes() {
+    huffman_nodes_list_t *list = huffman_nodes_list_create();
     if (list == NULL) {
         return NULL;
     }
@@ -46,17 +46,17 @@ huffman_nodes_list_t* create_leave_nodes() {
 }
 
 huffman_tree_t *huffman_tree_create() {
-    huffman_nodes_list_t* list = create_leave_nodes();
-    huffman_tree_t* tree = malloc(sizeof(huffman_tree_t));
+    huffman_nodes_list_t *list = create_leave_nodes();
+    huffman_tree_t *tree = malloc(sizeof(huffman_tree_t));
     if (tree == NULL) {
         huffman_nodes_list_destroy(list);
         return NULL;
     }
 
     while (huffman_nodes_list_length(list) > 1) {
-        huffman_node_t* node1 = huffman_nodes_list_get_min_node(list);
-        huffman_node_t* node2 = huffman_nodes_list_get_min_node(list);
-        huffman_node_t* merged_node = huffman_node_merge_nodes(node1, node2);
+        huffman_node_t *node1 = huffman_nodes_list_get_min_node(list);
+        huffman_node_t *node2 = huffman_nodes_list_get_min_node(list);
+        huffman_node_t *merged_node = huffman_node_merge_nodes(node1, node2);
 
         if (merged_node == NULL) {
             huffman_nodes_list_destroy(list);
@@ -67,7 +67,7 @@ huffman_tree_t *huffman_tree_create() {
         huffman_nodes_list_add_node(list, merged_node);
     }
 
-    huffman_node_t* root = huffman_nodes_list_get_min_node(list); // last node
+    huffman_node_t *root = huffman_nodes_list_get_min_node(list); // last node
     huffman_nodes_list_destroy(list);
 
     tree->root = root;
@@ -79,9 +79,10 @@ void huffman_tree_destroy(huffman_tree_t *tree) {
     free(tree);
 }
 
-void print(huffman_tree_t *tree) {
-    printf("_____________");
-    printf("Huffman Tree");
+void huffman_tree_print(huffman_tree_t *tree) {
+    printf("_____________\n");
+    printf("Huffman Tree\n");
+    printf("_____________\n");
     huffman_node_print(tree->root);
-    printf("_____________");
+    printf("_____________\n");
 }
