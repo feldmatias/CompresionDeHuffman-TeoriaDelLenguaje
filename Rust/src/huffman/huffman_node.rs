@@ -47,4 +47,8 @@ impl HuffmanNode {
             (_, _) => { false }
         };
     }
+
+    pub fn weight(&self) -> i32 {
+        return self.weight;
+    }
 }
