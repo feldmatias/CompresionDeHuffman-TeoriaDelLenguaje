@@ -54,6 +54,7 @@ impl HuffmanTree {
     pub fn print(&self) {
         println!("_____________");
         println!("Huffman Tree");
+        println!("_____________");
         self.root.print();
         println!("_____________");
     }
