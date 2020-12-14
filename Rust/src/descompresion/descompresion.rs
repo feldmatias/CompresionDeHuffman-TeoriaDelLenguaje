@@ -1,4 +1,4 @@
-//use std::fs;
+use std::fs;
 use std::env;
 
 fn main() {
@@ -8,5 +8,9 @@ fn main() {
         println!("Argumento {0}: {1}", i, arg);
         i += 1;
     }
-    //println!("{:?}", args);
+
+    let compressed_file = fs::read_to_string(filename).expect("Something went wrong \
+                                                                     reading the file");
+
+
 }
