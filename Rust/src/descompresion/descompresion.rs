@@ -1,5 +1,7 @@
 use std::fs;
 use std::env;
+use std::io::prelude::*;
+//use std::path::Path;
 //use crate::huffman::huffman_tree::HuffmanTree;
 
 //mod huffman::huffman_tree;
@@ -47,7 +49,19 @@ fn main() {
     let compressed_file = fs::read(&args[FILE_INDEX]).expect("Inexistent file");
     let padding_bits = compressed_file[0];
     let mut byte_to_read = 1;
+    let mut read_bits = 0;
+    let mut decompressed_file_text;
+    let mut last_byte_read_bits = 0;
     while byte_to_read < compressed_file.len() {
-        
+        read_bits = get_char(&compressed_file, &mut byte_to_read, read_bits,
+                             &mut decompressed_file_text);
+        if byte_to_read == (compressed_file.len() - 1) {
+            last_byte_read_bits += read_bits;
+            if (BITS_PER_BYTE - last_byte_read_bits) == padding_bits {
+                byte_to_read += 1;
+            }
+        }
     }
+    let mut decompressed_file = fs::File::create("foo.txt").expect("Problem creating the file");
+    decompressed_file.write_all( decompressed_file_text.as_bytes()).expect("Problem writing to file");
 }
