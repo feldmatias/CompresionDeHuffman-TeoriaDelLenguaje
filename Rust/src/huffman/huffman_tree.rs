@@ -1,5 +1,6 @@
 use crate::huffman::huffman_node::HuffmanNode;
 use crate::huffman::nodes_list::NodesList;
+use crate::huffman::InexistentLetterError;
 //use crate::huffman::huffman_node::NonLetterError;
 
 const SIZE: usize = 100;
@@ -58,6 +59,17 @@ impl HuffmanTree {
      */
     pub fn get_letter(&self, tree_code: &String) -> Option<char> {
         self.root.get_letter(&mut tree_code.chars())
+    }
+
+    /*
+     * Given a letter, returns the corresponded code. If the letter does not exist it returns
+     * an InexistentLetterError.
+     */
+    pub fn get_code(&self, letter: char) -> Result<String, InexistentLetterError> {
+        return match self.root.get_code(letter) {
+            Ok(code) => Ok(code),
+            Err(e) => Err(InexistentLetterError),
+        }
     }
 
     pub fn print(&self) {
