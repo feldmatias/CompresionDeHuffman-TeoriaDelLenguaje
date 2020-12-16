@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "decompression.h"
 #include "../huffman/huffman_tree.h"
+#include "bytes_vector/bytes_vector.h"
 
 #define COMPRESSED_EXTENSION ".huffman"
 #define DECOMPRESSED_EXTENSION ".txt"
@@ -70,11 +71,11 @@ int decompress_file(const char* file_name) {
 
     huffman_tree_decode();
     char* compressed_file_string;
-
     int program_status = load_file(file_name, &compressed_file_string);
     if (program_status != SUCCESS) {
         return program_status;
     }
+    bytes_vector_t decompressed_file;
 
     //todo el codigo en el medio
 

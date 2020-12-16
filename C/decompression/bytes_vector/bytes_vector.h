@@ -15,6 +15,10 @@ int bytes_vector_init(bytes_vector_t* self);
 
 int bytes_vector_add_bytes(const bytes_vector_t* self, const char* bytes);
 
+const char* bytes_vector_get_ptr(const bytes_vector_t* self);
+
+int bytes_vector_len(const bytes_vector_t* self);
+
 int bytes_vector_release(bytes_vector_t* self);
 
 #endif //C_BYTES_VECTOR_H
