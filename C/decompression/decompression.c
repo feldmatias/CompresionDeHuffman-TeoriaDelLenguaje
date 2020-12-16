@@ -10,6 +10,7 @@
 #define SUCCESS 0
 #define BAD_FILE_NAME -1
 #define MEMORY_ERROR -2
+#define FILE_ERROR -3
 
 //Esta funcion tecnicamente no lo hace de la misma forma que en Rust, pero
 //la puedo hacer de una forma mas conveniente, podriamos tomarlo como un ejemplo
@@ -35,6 +36,30 @@ bool is_file_name_valid(const char* file_name) {
     return (extension_ptr - file_name) + strlen(extension_ptr) == strlen(file_name);
 }
 
+int load_file(const char* file_name, char** compressed_file_string) {
+    FILE* compressed_file = fopen(file_name, "r");
+    if (!compressed_file) {
+        return FILE_ERROR;
+    }
+    fseek(compressed_file, 0, SEEK_END);
+    long compressed_file_size = ftell(compressed_file);
+    *compressed_file_string = malloc(sizeof(char) * (compressed_file_size + 1));
+    if (!*compressed_file_string) {
+        fclose(compressed_file);
+        return MEMORY_ERROR;
+    }
+
+    //Cargo el archivo en memoria
+    (*compressed_file_string)[compressed_file_size] = 0;
+    fseek(compressed_file, 0, SEEK_SET);
+    fread(*compressed_file_string, sizeof(char), compressed_file_size, compressed_file);
+
+    //Podriamos "olvidarnos" de cerrar el archivo para leakear y dejar un file
+    //descriptor suelto, y mostrar que en Rust esto no puede pasar
+    fclose(compressed_file);
+    return SUCCESS;
+}
+
 int decompress_file(const char* file_name) {
     if (!is_file_name_valid(file_name)) {
         return BAD_FILE_NAME;
@@ -43,21 +68,18 @@ int decompress_file(const char* file_name) {
     //Hacer que el struct este en el .h para que se pueda guardar en el stack
     //huffman_compression_t tree
 
-    huffman_compression_decode();
+    huffman_tree_decode();
+    char* compressed_file_string;
 
-    FILE* compressed_file = fopen(file_name, "r");
-    if (!compressed_file) {
-        return MEMORY_ERROR;
-    }
-    fseek(compressed_file, 0, SEEK_END);
-    char* compressed_file_string = malloc(sizeof(char) * (ftell(compressed_file) + 1));
-    if (!compressed_file_string) {
-        return MEMORY_ERROR;
+    int program_status = load_file(file_name, &compressed_file_string);
+    if (program_status != SUCCESS) {
+        return program_status;
     }
 
-    //Podriamos "olvidarnos" de cerrar el archivo para leakear y dejar un file
-    //descriptor suelto, y mostrar que en Rust esto no puede pasar
-    fclose(compressed_file);
+    //todo el codigo en el medio
+
+    //Pasar a una funcion que lo libera para que el programa quede simetrico
+    free(compressed_file_string);
 
     let compressed_file = fs::read(file_name).expect("Inexistent file");
     let padding_bits = compressed_file[0];
