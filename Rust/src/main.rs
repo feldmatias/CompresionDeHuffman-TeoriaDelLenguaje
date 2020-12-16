@@ -1,4 +1,4 @@
-//use crate::huffman::HuffmanCompression;
+use crate::huffman::HuffmanCompression;
 use std::env;
 
 mod huffman;
@@ -11,6 +11,7 @@ const DECOMPRESS_ARG: &str = "decompress";
 const COMPRESS_ARG: &str = "compress";
 
 fn main() {
+    /*
     let args: Vec<String> = env::args().collect();
     if args.len() != ARGS_AMOUNT {
         panic!("Incorrect amount of arguments");
@@ -22,10 +23,10 @@ fn main() {
     } else {
         panic!("Incorrect argument");
     }
+    */
 
 
-    /*
     let huffman = HuffmanCompression::new();
     huffman.print_tree();
-    */
+
 }
