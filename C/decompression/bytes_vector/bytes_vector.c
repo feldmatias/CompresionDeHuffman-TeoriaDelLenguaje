@@ -11,6 +11,7 @@ int bytes_vector_init(bytes_vector_t* self) {
     if (!self->vec) {
         return MEMORY_ERROR;
     }
+    self->vec[0] = 0; //String vacio
     self->size = INITIAL_SIZE;
     self->len = 0;
     return SUCCESS;
