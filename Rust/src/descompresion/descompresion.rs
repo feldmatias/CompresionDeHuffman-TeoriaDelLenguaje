@@ -3,6 +3,7 @@ use std::fs;
 use std::io::prelude::*;
 //use std::path::Path;
 //use crate::huffman::huffman_tree::HuffmanTree;
+use crate::huffman::HuffmanCompression;
 
 //mod huffman::huffman_tree;
 
@@ -30,7 +31,7 @@ fn get_char(bytes: &Vec<u8>, byte_to_read: &mut usize, read_bits: u8, decompress
 
         tree_code.push(std::char::from_u32(aux_byte as u32).expect("Invalid number for tree code"));
         _read_bits += 1;
-        match HuffmanTree::decode(&tree_code) {
+        match HuffmanCompression::decode(&tree_code) {
             Ok(letter) => {
                 (*decompressed_file).push(letter);
                 was_letter_decoded = true;

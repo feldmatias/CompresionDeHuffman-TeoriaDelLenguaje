@@ -5,8 +5,11 @@ pub struct HuffmanNode {
     right: Option<Box<HuffmanNode>>,
 }
 
+pub struct NonLetterError;
+
 impl HuffmanNode {
-    pub fn new_leave(letter: char, frequency: i32) -> Box<HuffmanNode> {
+
+    pub fn new_leaf(letter: char, frequency: i32) -> Box<HuffmanNode> {
         let node = HuffmanNode {
             letter,
             weight: frequency,
@@ -41,11 +44,28 @@ impl HuffmanNode {
         return Box::new(new_node);
     }
 
-    pub fn is_leave(&self) -> bool {
+    pub fn is_leaf(&self) -> bool {
         return match (&self.left, &self.right) {
             (None, None) => { true }
             (_, _) => { false }
         };
+    }
+
+    /*
+     * Given a code, it returns it's associated letter. If the code corresponds to a non-leaf node
+     * (therefore it does not contain a letter) then it returns None.
+     */
+    pub fn get_letter(&self, tree_code_it: &mut std::str::Chars) -> Option<char> {
+        if self.is_leaf() {
+            Some(self.letter)
+        } else {
+            let it = tree_code_it.next();
+            if it? == '0' {
+                self.left.as_ref().unwrap().get_letter(tree_code_it) //unwrap will enver panic because we know for a fact there is a child since we are not a leaf node
+            } else { //'1'
+                self.right.as_ref().unwrap().get_letter(tree_code_it)
+            }
+        }
     }
 
     pub fn weight(&self) -> i32 {
@@ -53,10 +73,10 @@ impl HuffmanNode {
     }
 
     pub fn print(&self) {
-        if self.is_leave() {
-            println!("leave: '{}' -> {}", self.letter.escape_default(), self.weight);
+        if self.is_leaf() {
+            println!("leaf: '{}' -> {}", self.letter.escape_default(), self.weight);
         } else {
-            println!("not leave: {}", self.weight);
+            println!("not leaf: {}", self.weight);
             match &self.left {
                 None => {}
                 Some(node) => { node.print() }

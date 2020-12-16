@@ -34,9 +34,9 @@ impl HuffmanNode2 {
         return self.weight;
     }
 
-    pub fn new_leave(letter: char, frequency: i32) -> Rc<RefCell<HuffmanNode2>> {
+    pub fn new_leaf(letter: char, frequency: i32) -> Rc<RefCell<HuffmanNode2>> {
         let node = HuffmanNode2 {
-            letter: letter,
+            letter,
             weight: frequency,
             left: None,
             right: None,
@@ -74,7 +74,7 @@ impl HuffmanNode2 {
         return new_node;
     }
 
-    pub fn is_leave(&self) -> bool {
+    pub fn is_leaf(&self) -> bool {
         return match (&self.left, &self.right) {
             (None, None) => { true }
             (_, _) => { false }
@@ -94,10 +94,10 @@ impl HuffmanNode2 {
             Some(p) => { p.as_ref().borrow().weight }
         };
 
-        if self.is_leave() {
-            println!("leave: '{}' -> {} (parent: {})", self.letter.escape_default(), self.weight, parent);
+        if self.is_leaf() {
+            println!("leaf: '{}' -> {} (parent: {})", self.letter.escape_default(), self.weight, parent);
         } else {
-            println!("not leave: {}  (parent: {})", self.weight, parent);
+            println!("not leaf: {}  (parent: {})", self.weight, parent);
             match &self.left {
                 None => {}
                 Some(n) => { n.as_ref().borrow().print() }

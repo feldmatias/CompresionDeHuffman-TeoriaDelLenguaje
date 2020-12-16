@@ -1,5 +1,6 @@
 use crate::huffman::huffman_node::HuffmanNode;
 use crate::huffman::nodes_list::NodesList;
+//use crate::huffman::huffman_node::NonLetterError;
 
 const SIZE: usize = 100;
 
@@ -28,7 +29,7 @@ pub struct HuffmanTree {
 
 impl HuffmanTree {
     pub fn new() -> HuffmanTree {
-        let mut nodes_list = HuffmanTree::create_leave_nodes();
+        let mut nodes_list = HuffmanTree::create_leaf_nodes();
         while nodes_list.length() > 1 {
             let node1 = nodes_list.get_min_node();
             let node2 = nodes_list.get_min_node();
@@ -42,13 +43,21 @@ impl HuffmanTree {
         };
     }
 
-    fn create_leave_nodes() -> NodesList {
+    fn create_leaf_nodes() -> NodesList {
         let mut nodes_list = NodesList::new();
         for i in 0..SIZE {
-            let leave_node = HuffmanNode::new_leave(CHARS[i], FREQUENCIES[i]);
-            nodes_list.add_node(leave_node);
+            let leaf_node = HuffmanNode::new_leaf(CHARS[i], FREQUENCIES[i]);
+            nodes_list.add_node(leaf_node);
         }
         return nodes_list;
+    }
+
+    /*
+     * Given a code, it returns it's associated letter. If the code corresponds to a non-leaf node
+     * (therefore it does not contain a letter) then it returns None.
+     */
+    pub fn get_letter(&self, tree_code: &String) -> Option<char> {
+        self.root.get_letter(&mut tree_code.chars())
     }
 
     pub fn print(&self) {
