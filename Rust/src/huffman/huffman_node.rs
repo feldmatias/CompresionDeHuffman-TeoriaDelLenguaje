@@ -5,7 +5,7 @@ pub struct HuffmanNode {
     right: Option<Box<HuffmanNode>>,
 }
 
-pub struct NonLetterError;
+pub struct BadPathError;
 
 impl HuffmanNode {
 
@@ -61,9 +61,35 @@ impl HuffmanNode {
         } else {
             let it = tree_code_it.next();
             if it? == '0' {
-                self.left.as_ref().unwrap().get_letter(tree_code_it) //unwrap will enver panic because we know for a fact there is a child since we are not a leaf node
+                self.left.as_ref().unwrap().get_letter(tree_code_it) //unwrap will never panic because we know for a fact there is a child since we are not a leaf node
             } else { //'1'
                 self.right.as_ref().unwrap().get_letter(tree_code_it)
+            }
+        }
+    }
+
+    /*
+     * Recursively travels the tree in a CLR (center-left-right) manner until it finds (if it exists)
+     * the node with the given letter, returning the code associated with the tree path. If the letter
+     * is not present in any node, then it returns an InexistentLetterError.
+     */
+    pub fn get_code(&self, letter: char) -> Result<String, BadPathError> {
+        return if self.letter == letter {
+            Ok(String::new())
+        } else if self.is_leaf() {
+            Err(BadPathError)
+        } else {
+            let left_code = self.left.as_ref().unwrap().get_code(letter); //it will never panic because we are not a leaf node
+            return match left_code {
+                Err(_) => {
+                    let mut right_code = self.right.as_ref().unwrap().get_code(letter)?;
+                    right_code.push('1');
+                    Ok(right_code)
+                },
+                Ok(mut c) => {
+                    c.push('0');
+                    Ok(c)
+                },
             }
         }
     }

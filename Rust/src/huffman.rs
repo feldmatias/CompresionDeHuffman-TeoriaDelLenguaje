@@ -1,10 +1,11 @@
 use crate::huffman::huffman_tree::HuffmanTree;
-//use crate::huffman::huffman_node::NonLetterError;
 
 mod huffman_node;
 mod nodes_list;
 mod huffman_tree;
 mod huffman_node_option2;
+
+pub struct InexistentLetterError;
 
 pub struct HuffmanCompression {
     pub tree: HuffmanTree,
@@ -26,10 +27,11 @@ impl HuffmanCompression {
     }
 
     /*
-     * Given a letter, returns the corresponded code.
+     * Given a letter, returns the corresponded code. If the letter does not exist it returns
+     * an InexistentLetterError.
      */
-    pub fn encode(&self, letter: char) -> String {
-        return String::new()
+    pub fn encode(&self, letter: char) -> Result<String, InexistentLetterError> {
+        self.tree.get_code(letter)
     }
 
     pub fn print_tree(&self) {
