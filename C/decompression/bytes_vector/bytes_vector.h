@@ -1,8 +1,20 @@
-//
-// Created by agustin on 16/12/20.
-//
-
 #ifndef C_BYTES_VECTOR_H
 #define C_BYTES_VECTOR_H
+
+//Tries to emulate a limited string
+//The len can be up to size - 1 due to the null byte
+
+//All attributes are private
+typedef struct {
+    char* vec;
+    int size;
+    int len;
+}bytes_vector_t;
+
+int bytes_vector_init(bytes_vector_t* self);
+
+int bytes_vector_add_bytes(const bytes_vector_t* self, const char* bytes);
+
+int bytes_vector_release(bytes_vector_t* self);
 
 #endif //C_BYTES_VECTOR_H
