@@ -2,8 +2,6 @@ use std::fs;
 use std::io::prelude::*;
 use crate::huffman::HuffmanCompression;
 
-//mod huffman;
-
 const BITS_PER_BYTE: u8 = 8;
 const COMPRESSED_EXTENSION: &str = ".huffman";
 const DECOMPRESSED_EXTENSION: &str = ".txt";
@@ -13,9 +11,8 @@ fn get_char(bytes: &Vec<u8>, huff_tree: &HuffmanCompression, byte_to_read: &mut 
             decompressed_file: &mut String) -> u8 {
     let mut aux_byte: u8;
     let mut was_letter_decoded = false;
-    let mut tree_code: String = "".to_string();
+    let mut tree_code: String = String::from("");
     let mut _read_bits: u8 = read_bits;
-    //let mut letter;
 
     while !was_letter_decoded {
         //Gets the corresponding bit
@@ -23,9 +20,9 @@ fn get_char(bytes: &Vec<u8>, huff_tree: &HuffmanCompression, byte_to_read: &mut 
 
         tree_code.push(std::char::from_u32(aux_byte as u32).expect("Invalid number for tree code"));
         _read_bits += 1;
-        match (*huff_tree).decode(&tree_code) {
+        match huff_tree.decode(&tree_code) {
             Some(letter) => {
-                (*decompressed_file).push(letter);
+                decompressed_file.push(letter);
                 was_letter_decoded = true;
             },
             None => {},
@@ -41,7 +38,7 @@ fn get_char(bytes: &Vec<u8>, huff_tree: &HuffmanCompression, byte_to_read: &mut 
 //Checks if the extension is at the end of the name of the file
 fn has_valid_file_name(file_name: &String) -> bool {
     return (*file_name).find(COMPRESSED_EXTENSION).expect("Unknown extension") +
-           COMPRESSED_EXTENSION.len() == (*file_name).len();
+           COMPRESSED_EXTENSION.len() == file_name.len();
 }
 
 fn execute_decompression(file_name: &String, decompressed_file_text: &mut String) {
@@ -70,7 +67,7 @@ pub fn decompress_file(file_name: &String) {
     if !has_valid_file_name(file_name) {
         panic!("Invalid file name");
     }
-    let mut decompressed_file_text = "".to_string();
+    let mut decompressed_file_text = String::from("");
     execute_decompression(file_name, &mut decompressed_file_text);
 
     //CAMBIAR ESTO PORQUE PUEDO HACER QUE LA FUNCION QUE CHEQUEA EL NOMBRE DEL ARCHIVO RETORNE LA POSICION
