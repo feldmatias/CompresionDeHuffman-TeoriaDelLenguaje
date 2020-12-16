@@ -79,7 +79,7 @@ impl HuffmanNode {
         } else if self.is_leaf() {
             Err(BadPathError)
         } else {
-            let left_code = self.left.as_ref().unwrap().get_code(letter);
+            let left_code = self.left.as_ref().unwrap().get_code(letter); //it will never panic because we are not a leaf node
             return match left_code {
                 Err(_) => {
                     let mut right_code = self.right.as_ref().unwrap().get_code(letter)?;

@@ -1,5 +1,4 @@
 use crate::huffman::huffman_tree::HuffmanTree;
-//use crate::huffman::huffman_node::NonLetterError;
 
 mod huffman_node;
 mod nodes_list;
