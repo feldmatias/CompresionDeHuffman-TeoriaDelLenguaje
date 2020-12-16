@@ -68,7 +68,7 @@ impl HuffmanTree {
     pub fn get_code(&self, letter: char) -> Result<String, InexistentLetterError> {
         return match self.root.get_code(letter) {
             Ok(code) => Ok(code),
-            Err(e) => Err(InexistentLetterError),
+            Err(_) => Err(InexistentLetterError),
         }
     }
 
