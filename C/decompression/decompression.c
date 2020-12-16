@@ -61,6 +61,30 @@ int load_file(const char* file_name, char** compressed_file_string) {
     return SUCCESS;
 }
 
+
+int execute_decompression(const char* file_name, const char* compressed_file, ) {
+    char padding_bits = compressed_file_string[0];
+    int byte_to_read = 1;
+    int read_bits = 0;
+
+    bytes_vector_t decompressed_file_text;
+    if (bytes_vector_init(&decompressed_file_text) != SUCCESS) {
+        //FALTA LIBERAR LA MEMORIA DE compressed_file_string
+        return MEMORY_ERROR;
+    }
+
+    //asdhakjsdhasdj
+
+    //Pasar a una funcion que lo libera para que el programa quede simetrico
+    if (bytes_vector_release(&decompressed_file_text) != SUCCESS) {
+        //FALTA LIBERAR LA MEMORIA DE compressed_file_string
+        return MEMORY_ERROR;
+    }
+
+}
+
+
+
 int decompress_file(const char* file_name) {
     if (!is_file_name_valid(file_name)) {
         return BAD_FILE_NAME;
@@ -75,11 +99,9 @@ int decompress_file(const char* file_name) {
     if (program_status != SUCCESS) {
         return program_status;
     }
-    bytes_vector_t decompressed_file;
 
-    //todo el codigo en el medio
 
-    //Pasar a una funcion que lo libera para que el programa quede simetrico
+
     free(compressed_file_string);
 
     let compressed_file = fs::read(file_name).expect("Inexistent file");
