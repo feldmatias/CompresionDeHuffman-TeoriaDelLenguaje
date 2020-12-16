@@ -11,14 +11,11 @@ const DECOMPRESSED_EXTENSION: &str = ".txt";
 //Returns the number of read bits
 fn get_char(bytes: &Vec<u8>, huff_tree: &HuffmanCompression, byte_to_read: &mut usize, read_bits: u8,
             decompressed_file: &mut String) -> u8 {
-    //Leaves the already read bits in 0
-    //let mut aux_byte: u8 = (bytes[byte_to_read] << read_bits) >> read_bits;
-
     let mut aux_byte: u8;
     let mut was_letter_decoded = false;
     let mut tree_code: String = "".to_string();
     let mut _read_bits: u8 = read_bits;
-    let mut letter;
+    //let mut letter;
 
     while !was_letter_decoded {
         //Gets the corresponding bit
@@ -26,21 +23,13 @@ fn get_char(bytes: &Vec<u8>, huff_tree: &HuffmanCompression, byte_to_read: &mut 
 
         tree_code.push(std::char::from_u32(aux_byte as u32).expect("Invalid number for tree code"));
         _read_bits += 1;
-
-        //Lo ideal seria usar pattern matching pero como retorna un Option<char> no puedo
-        letter = (*huff_tree).decode(&tree_code);
-        if letter != None {
-            (*decompressed_file).push(letter.unwrap());
-            was_letter_decoded = true;
-        }
-        /*
         match (*huff_tree).decode(&tree_code) {
-            char(letter) => {
+            Some(letter) => {
                 (*decompressed_file).push(letter);
                 was_letter_decoded = true;
             },
+            None => {},
         }
-        */
         if _read_bits == BITS_PER_BYTE {
             _read_bits = 0;
             (*byte_to_read) += 1;
@@ -79,7 +68,7 @@ fn execute_decompression(file_name: &String, decompressed_file_text: &mut String
 //The filename must end with .huffman, otherwise the program will panic
 pub fn decompress_file(file_name: &String) {
     if !has_valid_file_name(file_name) {
-        panic!("Invalid file name")
+        panic!("Invalid file name");
     }
     let mut decompressed_file_text = "".to_string();
     execute_decompression(file_name, &mut decompressed_file_text);
