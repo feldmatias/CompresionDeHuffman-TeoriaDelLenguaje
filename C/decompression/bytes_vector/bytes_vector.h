@@ -5,11 +5,11 @@
 //The len can be up to size - 1 due to the null byte
 
 //All attributes are private
-typedef struct {
+typedef struct bytes_vector {
     char* vec;
     int size;
     int len;
-}bytes_vector_t;
+} bytes_vector_t;
 
 //Returns 0 if successful, otherwise returns -1
 int bytes_vector_init(bytes_vector_t* self);
