@@ -17,7 +17,7 @@ int bytes_vector_init(bytes_vector_t* self) {
     return SUCCESS;
 }
 
-int bytes_vector_add_bytes(const bytes_vector_t* self, const char* bytes) {
+int bytes_vector_add_byte(bytes_vector_t* self, char byte) {
 
 }
 

@@ -3,6 +3,7 @@
 #include "huffman_tree.h"
 #include "huffman_node.h"
 #include "nodes_list.h"
+#include <string.h>
 
 const char CHARS[100] = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
@@ -27,26 +28,26 @@ struct huffman_tree {
     huffman_node_t *root;
 };
 
-huffman_nodes_list_t *create_leave_nodes() {
+huffman_nodes_list_t *create_leaf_nodes() {
     huffman_nodes_list_t *list = huffman_nodes_list_create();
     if (list == NULL) {
         return NULL;
     }
 
     for (int i = 0; i < 100; i++) {
-        huffman_node_t *leave_node = huffman_node_create(CHARS[i], FREQUENCIES[i]);
-        if (leave_node == NULL) {
+        huffman_node_t *leaf_node = huffman_node_create(CHARS[i], FREQUENCIES[i]);
+        if (leaf_node == NULL) {
             huffman_nodes_list_destroy(list);
             return NULL;
         }
 
-        huffman_nodes_list_add_node(list, leave_node);
+        huffman_nodes_list_add_node(list, leaf_node);
     }
     return list;
 }
 
 huffman_tree_t *huffman_tree_create() {
-    huffman_nodes_list_t *list = create_leave_nodes();
+    huffman_nodes_list_t *list = create_leaf_nodes();
     huffman_tree_t *tree = malloc(sizeof(huffman_tree_t));
     if (tree == NULL) {
         huffman_nodes_list_destroy(list);
@@ -72,6 +73,15 @@ huffman_tree_t *huffman_tree_create() {
 
     tree->root = root;
     return tree;
+}
+
+char huffman_tree_get_letter(const huffman_tree_t* self, const char* tree_code) {
+    unsigned long code_length = strlen(tree_code); //since we have to read backwards, we need to know how long the string is
+    return huffman_node_get_letter(self->root, tree_code + code_length - 1, code_length);
+}
+
+bytes_vector_t* huffman_tree_get_code(const struct huffman_tree* self, char letter) {
+    return huffman_node_get_code(self->root, letter);
 }
 
 void huffman_tree_destroy(huffman_tree_t *tree) {
