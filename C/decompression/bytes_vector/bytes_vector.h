@@ -11,6 +11,7 @@ typedef struct bytes_vector {
     int len;
 } bytes_vector_t;
 
+//Returns 0 if successful, otherwise returns -1
 int bytes_vector_init(bytes_vector_t* self);
 
 int bytes_vector_add_byte(bytes_vector_t* self, char byte);
@@ -19,6 +20,6 @@ const char* bytes_vector_get_ptr(const bytes_vector_t* self);
 
 int bytes_vector_len(const bytes_vector_t* self);
 
-int bytes_vector_release(bytes_vector_t* self);
+void bytes_vector_release(bytes_vector_t* self);
 
 #endif //C_BYTES_VECTOR_H

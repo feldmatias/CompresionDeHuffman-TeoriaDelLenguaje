@@ -18,7 +18,19 @@ int bytes_vector_init(bytes_vector_t* self) {
 }
 
 int bytes_vector_add_byte(bytes_vector_t* self, char byte) {
-
+    if (self->len == self->size - 1) {
+        char* aux_ptr = realloc(self->vec, self->size * 2);
+        if (!aux_ptr) {
+            return MEMORY_ERROR;
+        } else {
+            self->vec = aux_ptr;
+        }
+    }
+    self->vec[self->len] = byte;
+    self->len++;
+    self->vec[self->len] = 0;
+    self->size *= 2;
+    return SUCCESS;
 }
 
 const char* bytes_vector_get_ptr(const bytes_vector_t* self) {
@@ -29,7 +41,6 @@ int bytes_vector_len(const bytes_vector_t* self) {
     return self->len;
 }
 
-int bytes_vector_release(bytes_vector_t* self) {
+void bytes_vector_release(bytes_vector_t* self) {
     free(self->vec);
-    return SUCCESS;
 }

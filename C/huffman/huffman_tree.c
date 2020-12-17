@@ -1,9 +1,11 @@
-#include <stdlib.h>
 #include <stdio.h>
 #include "huffman_tree.h"
 #include "huffman_node.h"
 #include "nodes_list.h"
 #include <string.h>
+
+#define SUCCESS 0
+#define MEMORY_ERROR -1;
 
 const char CHARS[100] = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
@@ -24,9 +26,6 @@ const int FREQUENCIES[100] = {
         2, 1, 1285884, 0, 124787, 0, 0, 0,
 };
 
-struct huffman_tree {
-    huffman_node_t *root;
-};
 
 huffman_nodes_list_t *create_leaf_nodes() {
     huffman_nodes_list_t *list = huffman_nodes_list_create();
@@ -46,14 +45,11 @@ huffman_nodes_list_t *create_leaf_nodes() {
     return list;
 }
 
-huffman_tree_t *huffman_tree_create() {
+int huffman_tree_init(huffman_tree_t *tree) {
     huffman_nodes_list_t *list = create_leaf_nodes();
-    huffman_tree_t *tree = malloc(sizeof(huffman_tree_t));
-    if (tree == NULL) {
-        huffman_nodes_list_destroy(list);
-        return NULL;
+    if (list == NULL) {
+        return MEMORY_ERROR;
     }
-
     while (huffman_nodes_list_length(list) > 1) {
         huffman_node_t *node1 = huffman_nodes_list_get_min_node(list);
         huffman_node_t *node2 = huffman_nodes_list_get_min_node(list);
@@ -61,8 +57,7 @@ huffman_tree_t *huffman_tree_create() {
 
         if (merged_node == NULL) {
             huffman_nodes_list_destroy(list);
-            free(tree);
-            return NULL;
+            return MEMORY_ERROR;
         }
 
         huffman_nodes_list_add_node(list, merged_node);
@@ -72,7 +67,7 @@ huffman_tree_t *huffman_tree_create() {
     huffman_nodes_list_destroy(list);
 
     tree->root = root;
-    return tree;
+    return SUCCESS;
 }
 
 char huffman_tree_get_letter(const huffman_tree_t* self, const char* tree_code) {
@@ -84,9 +79,8 @@ bytes_vector_t* huffman_tree_get_code(const struct huffman_tree* self, char lett
     return huffman_node_get_code(self->root, letter);
 }
 
-void huffman_tree_destroy(huffman_tree_t *tree) {
+void huffman_tree_release(huffman_tree_t *tree) {
     huffman_node_destroy(tree->root);
-    free(tree);
 }
 
 void huffman_tree_print(huffman_tree_t *tree) {

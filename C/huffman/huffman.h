@@ -1,11 +1,16 @@
 #ifndef C_HUFFMAN_H
 #define C_HUFFMAN_H
 
-struct huffman_compression;
+#include "huffman_tree.h"
+
 typedef struct bytes_vector bytes_vector_t;
 
-typedef struct huffman_compression huffman_compression_t;
+typedef struct huffman_compression {
+    huffman_tree_t tree;
+} huffman_compression_t;
 
+//Returns 0 if successful, otherwise returns -1
+int huffman_compression_init(huffman_compression_t *huffman);
 
 huffman_compression_t *huffman_compression_create();
 
@@ -21,7 +26,7 @@ char huffman_compression_decode(const huffman_compression_t* self, const char* t
  */
 bytes_vector_t* huffman_compression_encode(const huffman_compression_t* self, char letter);
 
-void huffman_compression_destroy(huffman_compression_t *huffman);
+void huffman_compression_release(huffman_compression_t *huffman);
 
 void huffman_compression_print_tree(huffman_compression_t *huffman);
 
