@@ -1,7 +1,6 @@
 use crate::huffman::huffman_node::HuffmanNode;
 use crate::huffman::nodes_list::NodesList;
 use crate::huffman::InexistentLetterError;
-//use crate::huffman::huffman_node::NonLetterError;
 
 const SIZE: usize = 100;
 
