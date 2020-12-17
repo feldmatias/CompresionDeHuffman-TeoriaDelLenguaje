@@ -3,6 +3,7 @@ use std::env;
 
 mod huffman;
 mod decompression;
+mod compression;
 
 const PROGRAM_MODE_INDEX: usize = 1;
 const FILE_INDEX: usize = 2;
@@ -28,5 +29,7 @@ fn main() {
 
     let huffman = HuffmanCompression::new();
     huffman.print_tree();
-
+    //let filename = String::from("test.huffman");
+    //compression::compress_file(&filename);
+    //decompression::decompress_file(&filename);
 }
