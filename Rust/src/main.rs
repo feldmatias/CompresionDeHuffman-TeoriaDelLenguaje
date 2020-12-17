@@ -27,9 +27,9 @@ fn main() {
     */
 
 
-    let huffman = HuffmanCompression::new();
-    huffman.print_tree();
-    //let filename = String::from("test.huffman");
-    //compression::compress_file(&filename);
-    //decompression::decompress_file(&filename);
+    //let huffman = HuffmanCompression::new();
+    //huffman.print_tree();
+    let filename = String::from("test.huffman");
+    compression::compress_file(&filename);
+    decompression::decompress_file(&filename);
 }

@@ -69,9 +69,9 @@ pub fn compress_file(file_name: &String) {
     let mut file = fs::File::create("test.huffman").expect("Could not create file");
     compression_vec[0] = (bits_left % 8) as u8;
     file.write_all(&*compression_vec).expect("Could not write");
-    let string_file= std::fs::read("test.huffman").expect("Something went wrong reading the file");
+    /*let string_file= std::fs::read("test.huffman").expect("Something went wrong reading the file");
     println!("File");
     for c in string_file {
         println!("{}", c as u8);
-    }
+    }*/
 }
