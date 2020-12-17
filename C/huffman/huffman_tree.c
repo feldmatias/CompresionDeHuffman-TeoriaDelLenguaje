@@ -4,6 +4,9 @@
 #include "huffman_node.h"
 #include "nodes_list.h"
 
+#define SUCCESS 0
+#define MEMORY_ERROR -1;
+
 const char CHARS[100] = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
         'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
@@ -21,10 +24,6 @@ const int FREQUENCIES[100] = {
         39878, 14169, 3587, 16508, 608, 9128, 532, 8840, 488, 3, 2, 1, 21, 31077, 643, 644, 73, 0,
         83315, 8150, 78216, 48, 1843, 17199, 468, 0, 440, 10476, 3, 2076, 0, 2068, 0, 71, 1, 0, 33,
         2, 1, 1285884, 0, 124787, 0, 0, 0,
-};
-
-struct huffman_tree {
-    huffman_node_t *root;
 };
 
 huffman_nodes_list_t *create_leave_nodes() {
@@ -45,14 +44,11 @@ huffman_nodes_list_t *create_leave_nodes() {
     return list;
 }
 
-huffman_tree_t *huffman_tree_create() {
+int huffman_tree_init(huffman_tree_t *tree) {
     huffman_nodes_list_t *list = create_leave_nodes();
-    huffman_tree_t *tree = malloc(sizeof(huffman_tree_t));
-    if (tree == NULL) {
-        huffman_nodes_list_destroy(list);
-        return NULL;
+    if (list == NULL) {
+        return MEMORY_ERROR;
     }
-
     while (huffman_nodes_list_length(list) > 1) {
         huffman_node_t *node1 = huffman_nodes_list_get_min_node(list);
         huffman_node_t *node2 = huffman_nodes_list_get_min_node(list);
@@ -60,8 +56,7 @@ huffman_tree_t *huffman_tree_create() {
 
         if (merged_node == NULL) {
             huffman_nodes_list_destroy(list);
-            free(tree);
-            return NULL;
+            return MEMORY_ERROR;
         }
 
         huffman_nodes_list_add_node(list, merged_node);
@@ -71,12 +66,11 @@ huffman_tree_t *huffman_tree_create() {
     huffman_nodes_list_destroy(list);
 
     tree->root = root;
-    return tree;
+    return SUCCESS;
 }
 
-void huffman_tree_destroy(huffman_tree_t *tree) {
+void huffman_tree_release(huffman_tree_t *tree) {
     huffman_node_destroy(tree->root);
-    free(tree);
 }
 
 void huffman_tree_print(huffman_tree_t *tree) {
