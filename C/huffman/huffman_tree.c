@@ -44,58 +44,11 @@ huffman_nodes_list_t *create_leave_nodes() {
     return list;
 }
 
-/*
-huffman_tree_t *huffman_tree_create() {
-    huffman_nodes_list_t *list = create_leave_nodes();
-    huffman_tree_t *tree = malloc(sizeof(huffman_tree_t));
-    if (tree == NULL) {
-        huffman_nodes_list_destroy(list);
-        return NULL;
-    }
-
-    while (huffman_nodes_list_length(list) > 1) {
-        huffman_node_t *node1 = huffman_nodes_list_get_min_node(list);
-        huffman_node_t *node2 = huffman_nodes_list_get_min_node(list);
-        huffman_node_t *merged_node = huffman_node_merge_nodes(node1, node2);
-
-        if (merged_node == NULL) {
-            huffman_nodes_list_destroy(list);
-            free(tree);
-            return NULL;
-        }
-
-        huffman_nodes_list_add_node(list, merged_node);
-    }
-
-    huffman_node_t *root = huffman_nodes_list_get_min_node(list); // last node
-    huffman_nodes_list_destroy(list);
-
-    tree->root = root;
-    return tree;
-}
-
-void huffman_tree_destroy(huffman_tree_t *tree) {
-    huffman_node_destroy(tree->root);
-    free(tree);
-}
-
-
-
-*/
-
 int huffman_tree_init(huffman_tree_t *tree) {
     huffman_nodes_list_t *list = create_leave_nodes();
     if (list == NULL) {
         return MEMORY_ERROR;
     }
-
-    /*
-    huffman_tree_t *tree = malloc(sizeof(huffman_tree_t));
-    if (tree == NULL) {
-        huffman_nodes_list_destroy(list);
-        return NULL;
-    }
-    */
     while (huffman_nodes_list_length(list) > 1) {
         huffman_node_t *node1 = huffman_nodes_list_get_min_node(list);
         huffman_node_t *node2 = huffman_nodes_list_get_min_node(list);
@@ -103,7 +56,6 @@ int huffman_tree_init(huffman_tree_t *tree) {
 
         if (merged_node == NULL) {
             huffman_nodes_list_destroy(list);
-            //free(tree);
             return MEMORY_ERROR;
         }
 
