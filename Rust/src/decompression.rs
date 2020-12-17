@@ -44,15 +44,22 @@ fn has_valid_file_name(file_name: &String) -> bool {
 fn execute_decompression(file_name: &String, decompressed_file_text: &mut String) {
     let compressed_file = fs::read(file_name).expect("Inexistent file");
     let padding_bits = compressed_file[0];
-    let mut byte_to_read = 1;
+    let mut byte_to_read = 1;//byte que se esta procesando
+    let mut last_byte_to_read = 1;//byte que se proceso en la iteracion anterior
     let mut read_bits = 0;
-    let mut last_byte_read_bits = 0;
+    let mut last_byte_read_bits = 0;//Cantidad de bits totales leidos del byte que se
+                                        //esta procesando
     let huff_tree = HuffmanCompression::new();
     while byte_to_read < compressed_file.len() {
         read_bits = get_char(&compressed_file, &huff_tree, &mut byte_to_read, read_bits,
                              decompressed_file_text);
-        if byte_to_read == (compressed_file.len() - 1) {
+        if byte_to_read == last_byte_to_read {
             last_byte_read_bits += read_bits;
+        } else {
+            last_byte_read_bits = 0;
+        }
+        last_byte_to_read = byte_to_read;
+        if byte_to_read == (compressed_file.len() - 1) {
             if (BITS_PER_BYTE - last_byte_read_bits) == padding_bits {
                 byte_to_read += 1;
             }
