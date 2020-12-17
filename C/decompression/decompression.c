@@ -112,9 +112,14 @@ int execute_decompression(const char* file_name, const char* compressed_file_str
     while (byte_to_read < compressed_file_len) {
         read_bits = get_char(&compressed_file, &mut byte_to_read, read_bits,
                 &mut decompressed_file_text);
-        if (byte_to_read == (compressed_file_len - 1)) {
+        if byte_to_read == last_byte_to_read {
             last_byte_read_bits += read_bits;
-            if ((BITS_PER_BYTE - last_byte_read_bits) == padding_bits) {
+        } else {
+            last_byte_read_bits = 0;
+        }
+        last_byte_to_read = byte_to_read;
+        if byte_to_read == (compressed_file.len() - 1) {
+            if (BITS_PER_BYTE - last_byte_read_bits) == padding_bits {
                 byte_to_read += 1;
             }
         }
@@ -124,6 +129,9 @@ int execute_decompression(const char* file_name, const char* compressed_file_str
         return MEMORY_ERROR;
     }
 
+    //DESTRUIR EL HUFFMAN TREE
+
+    return SUCCESS;
 }
 
 
