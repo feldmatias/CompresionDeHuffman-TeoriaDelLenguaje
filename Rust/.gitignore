@@ -8,3 +8,6 @@ target/
 
 
 .idea
+/.rustc_info.json
+/release/
+/HuffmanCompression
