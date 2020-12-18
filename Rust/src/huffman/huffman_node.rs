@@ -59,7 +59,7 @@ impl HuffmanNode {
         if self.is_leaf() {
             Some(self.letter)
         } else {
-            let it = tree_code_it.next_back();
+            let it = tree_code_it.next();
             if it? == '0' {
                 self.left.as_ref().unwrap().get_letter(tree_code_it) //unwrap will never panic because we know for a fact there is a child since we are not a leaf node
             } else { //'1'

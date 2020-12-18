@@ -26,11 +26,12 @@ fn main() {
     }
     */
 
+    //compression::compress_file(&String::from("test.huffman"));
     //decompression::decompress_file(&String::from("test.huffman"));
 
-    //let huffman = HuffmanCompression::new();
-    //huffman.print_tree();
-    let filename = String::from("test.huffman");
-    compression::compress_file(&filename);
-    decompression::decompress_file(&filename);
+    let huffman = HuffmanCompression::new();
+    huffman.print_tree();
+    //let filename = String::from("test.huffman");
+    //compression::compress_file(&filename);
+    //decompression::decompress_file(&filename);
 }
