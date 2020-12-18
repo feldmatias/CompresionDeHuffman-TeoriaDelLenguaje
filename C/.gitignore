@@ -1039,5 +1039,7 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
+C.cbp
+
 .idea
 /HuffmanCompression
