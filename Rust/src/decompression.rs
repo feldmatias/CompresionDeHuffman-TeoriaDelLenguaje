@@ -21,6 +21,12 @@ fn get_char(bytes: &Vec<u8>, huff_tree: &HuffmanCompression, byte_to_read: &mut 
         _read_bits += 1;
         match huff_tree.decode(&tree_code) {
             Some(letter) => {
+                /*println!("Letra: {}", letter);
+                for c in tree_code.chars(){
+                    print!("{}", c);
+                }
+                println!();*/
+
                 decompressed_file.push(letter);
                 was_letter_decoded = true;
                 //println!("{}", tree_code)
@@ -65,6 +71,7 @@ fn execute_decompression(file_name: &String, decompressed_file_text: &mut String
             }
         }
     }
+
 }
 
 //Receives a huffman compressed text and creates a decompressed .txt version
