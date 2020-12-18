@@ -16,14 +16,14 @@ fn get_char(bytes: &Vec<u8>, huff_tree: &HuffmanCompression, byte_to_read: &mut 
 
     while !was_letter_decoded {
         //Gets the corresponding bit
-        aux_byte = (bytes[*byte_to_read] << read_bits) >> (read_bits + BITS_PER_BYTE - (read_bits + 1));
-
-        tree_code.push(std::char::from_u32(aux_byte as u32).expect("Invalid number for tree code"));
+        aux_byte = (bytes[*byte_to_read] << _read_bits) >> (_read_bits + BITS_PER_BYTE - (_read_bits + 1));//El ultimo shift da siempre 7
+        tree_code.push(std::char::from_u32(aux_byte as u32 + b'0' as u32).expect("Invalid number for tree code"));
         _read_bits += 1;
         match huff_tree.decode(&tree_code) {
             Some(letter) => {
                 decompressed_file.push(letter);
                 was_letter_decoded = true;
+                //println!("{}", tree_code)
             },
             None => {},
         }
@@ -56,7 +56,7 @@ fn execute_decompression(file_name: &String, decompressed_file_text: &mut String
         if byte_to_read == last_byte_to_read {
             last_byte_read_bits += read_bits;
         } else {
-            last_byte_read_bits = 0;
+            last_byte_read_bits = read_bits;
         }
         last_byte_to_read = byte_to_read;
         if byte_to_read == (compressed_file.len() - 1) {
