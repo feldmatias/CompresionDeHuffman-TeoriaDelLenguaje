@@ -12,7 +12,6 @@ typedef struct huffman_compression {
 //Returns 0 if successful, otherwise returns -1
 int huffman_compression_init(huffman_compression_t *huffman);
 
-//int huffman_compression_create(huffman_compression_t* self);
 
 /*
  * Given a letter code, returns the corresponded letter. If the code is not associated
