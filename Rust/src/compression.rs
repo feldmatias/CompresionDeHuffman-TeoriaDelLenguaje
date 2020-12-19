@@ -46,8 +46,8 @@ pub fn compress_file(file_name: &String) {
     if !valid_file_extension(file_name){
         panic!("Invalid File Extension");
     }
-    //let file_to_compress = fs::read_to_string(file_name).expect("File does not exist");
-    let file_to_compress = String::from("Huffman");
+    let file_to_compress = fs::read_to_string(file_name).expect("File does not exist");
+    //let file_to_compress = String::from("Prueba de compresion Huffman un poco mas");
     let mut compression_vec : Vec<u8> = Vec::new();
     let mut byte_string = String::new();
     let mut bits_left :i8 = 8;

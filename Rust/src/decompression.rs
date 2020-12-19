@@ -54,6 +54,9 @@ fn execute_decompression(file_name: &String, decompressed_file_text: &mut String
     while byte_to_read < compressed_file.len() {
         read_bits = get_char(&compressed_file, &huff_tree, &mut byte_to_read, read_bits,
                              decompressed_file_text);
+        if last_byte_to_read >= compressed_file.len() {
+            last_byte_to_read = compressed_file.len() - 1;
+        }
         if byte_to_read == last_byte_to_read {
             last_byte_read_bits += read_bits;
         } else {
@@ -82,7 +85,7 @@ pub fn decompress_file(file_name: &String) {
     //CAMBIAR ESTO PORQUE PUEDO HACER QUE LA FUNCION QUE CHEQUEA EL NOMBRE DEL ARCHIVO RETORNE LA POSICION
     //DE LA EXTENSION, TENDRIA QUE SACAR EL EXPECT DEL find
     let mut decompressed_file = fs::File::create(file_name[..file_name.find(COMPRESSED_EXTENSION).
-                                                      expect("Wrong extension")].to_string() + DECOMPRESSED_EXTENSION).
+                                                      expect("Wrong extension")].to_string() + "Decompressed" + DECOMPRESSED_EXTENSION).
                                                       expect("Problem creating the file");
     decompressed_file.write_all( decompressed_file_text.as_bytes()).expect("Problem writing to file");
 }
