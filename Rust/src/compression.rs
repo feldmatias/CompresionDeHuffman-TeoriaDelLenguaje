@@ -2,6 +2,15 @@ use std::fs;
 use std::io::{Write};
 use crate::huffman::{HuffmanCompression, InexistentLetterError};
 
+fn valid_file_extension(file_name: &String) -> bool {
+    let extension =  (*file_name).find(".txt");
+    return match extension {
+        Some(_) => true,
+        None => false,
+    }
+
+}
+
 fn string_to_u8(code: &String) -> u8 {
    return code.as_bytes().iter()
        .fold((0,128),|(acc,mul),&c| (acc+(mul*(1&c as u8)),mul/2)).0;
@@ -34,12 +43,14 @@ fn process_code(code: &mut String, byte_string: &mut String, bits_left: &mut i8,
 }
 
 pub fn compress_file(file_name: &String) {
+    if !valid_file_extension(file_name){
+        panic!("Invalid File Extension");
+    }
     //let file_to_compress = fs::read_to_string(file_name).expect("File does not exist");
     let file_to_compress = String::from("Huffman");
     let mut compression_vec : Vec<u8> = Vec::new();
     let mut byte_string = String::new();
     let mut bits_left :i8 = 8;
-
     let huff_tree = HuffmanCompression::new();
 
     compression_vec.push(0);//Aca voy a poner el padding al final
@@ -49,8 +60,8 @@ pub fn compress_file(file_name: &String) {
             Ok(mut char_code) => {
                 process_code(&mut char_code, &mut byte_string, &mut bits_left, &mut compression_vec);
             },
-            Err(E) => {
-                println!("Error:");
+            Err(_) => {
+                panic!("Inexistent character");
             }
         }
     }
@@ -66,12 +77,7 @@ pub fn compress_file(file_name: &String) {
 
     //Creacion del archivo comprimido. Falta tomar el nombre del archivo que estoy leyendo en lugar de "test"
     // y sacar los prints etc
-    let mut file = fs::File::create("test.huffman").expect("Could not create file");
+    let mut file = fs::File::create(file_name.replace(".txt", ".huffman")).expect("Could not create file");
     compression_vec[0] = (bits_left % 8) as u8;
     file.write_all(&*compression_vec).expect("Could not write");
-    /*let string_file= std::fs::read("test.huffman").expect("Something went wrong reading the file");
-    println!("File");
-    for c in string_file {
-        println!("{}", c as u8);
-    }*/
 }

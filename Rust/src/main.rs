@@ -30,7 +30,8 @@ fn main() {
 
     //let huffman = HuffmanCompression::new();
     //huffman.print_tree();
-    let filename = String::from("test.huffman");
+    let mut filename = String::from("HuffmanTest.txt");
     compression::compress_file(&filename);
+    filename = filename.replace(".txt", ".huffman");
     decompression::decompress_file(&filename);
 }
