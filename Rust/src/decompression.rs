@@ -23,8 +23,6 @@ fn get_char(bytes: &Vec<u8>, huff_tree: &HuffmanCompression, byte_to_read: &mut 
             Some(letter) => {
                 decompressed_file.push(letter);
                 was_letter_decoded = true;
-                println!("{}", tree_code);
-                println!("{}", letter);
             },
             None => {},
         }
