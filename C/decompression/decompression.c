@@ -102,9 +102,7 @@ int get_char(const char* compressed_file_string, const huffman_compression_t* hu
 int execute_decompression(const char* file_name, const char* compressed_file_string, int compressed_file_len) {
     char padding_bits = compressed_file_string[0];
     int byte_to_read = 1;
-    int last_byte_to_read = 1;
     char read_bits = 0;
-    char last_byte_read_bits = 0;
     huffman_compression_t huffman;
     if (huffman_compression_init(&huffman) != 0) {
         return MEMORY_ERROR;
@@ -121,14 +119,11 @@ int execute_decompression(const char* file_name, const char* compressed_file_str
             huffman_compression_release(&huffman);
             return MEMORY_ERROR;
         }
-        if (byte_to_read == last_byte_to_read) {
-            last_byte_read_bits += read_bits;
-        } else {
-            last_byte_read_bits = 0;
+        if (byte_to_read >= compressed_file_len) {
+            byte_to_read = compressed_file_len - 1;
         }
-        last_byte_to_read = byte_to_read;
         if (byte_to_read == (compressed_file_len - 1)) {
-            if ((BITS_PER_BYTE - last_byte_read_bits) == padding_bits) {
+            if ((BITS_PER_BYTE - read_bits) == padding_bits) {
                 byte_to_read += 1;
             }
         }
