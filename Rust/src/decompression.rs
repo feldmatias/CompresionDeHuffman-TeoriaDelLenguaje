@@ -23,6 +23,10 @@ fn get_char(bytes: &Vec<u8>, huff_tree: &HuffmanCompression, byte_to_read: &mut 
             Some(letter) => {
                 decompressed_file.push(letter);
                 was_letter_decoded = true;
+                if letter == ' ' && (*byte_to_read == bytes.len()-1) {
+                    println!("Codigo: {}", tree_code);
+
+                }
             },
             None => {},
         }
@@ -31,6 +35,7 @@ fn get_char(bytes: &Vec<u8>, huff_tree: &HuffmanCompression, byte_to_read: &mut 
             (*byte_to_read) += 1;
         }
     }
+
     return _read_bits;
 }
 
@@ -46,8 +51,6 @@ fn execute_decompression(file_name: &String, decompressed_file_text: &mut String
     let mut byte_to_read = 1;//byte que se esta procesando
     let mut last_byte_to_read = 1;//byte que se proceso en la iteracion anterior
     let mut read_bits = 0;
-    let mut last_byte_read_bits = 0;//Cantidad de bits totales leidos del byte que se
-                                        //esta procesando
     let huff_tree = HuffmanCompression::new();
     while byte_to_read < compressed_file.len() {
         read_bits = get_char(&compressed_file, &huff_tree, &mut byte_to_read, read_bits,
@@ -55,14 +58,9 @@ fn execute_decompression(file_name: &String, decompressed_file_text: &mut String
         if last_byte_to_read >= compressed_file.len() {
             last_byte_to_read = compressed_file.len() - 1;
         }
-        if byte_to_read == last_byte_to_read {
-            last_byte_read_bits += read_bits;
-        } else {
-            last_byte_read_bits = read_bits;
-        }
         last_byte_to_read = byte_to_read;
         if byte_to_read == (compressed_file.len() - 1) {
-            if (BITS_PER_BYTE - last_byte_read_bits) == padding_bits {
+            if (BITS_PER_BYTE - read_bits) == padding_bits {
                 byte_to_read += 1;
             }
         }
