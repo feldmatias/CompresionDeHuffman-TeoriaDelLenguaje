@@ -5,9 +5,11 @@
 #include "decompression.h"
 #include "../huffman/huffman_tree.h"
 #include "bytes_vector/bytes_vector.h"
+#include "../huffman/huffman.h"
 
 #define COMPRESSED_EXTENSION ".huffman"
 #define DECOMPRESSED_EXTENSION ".txt"
+#define EXTENSION_CHAR "."
 #define BITS_PER_BYTE 8
 
 #define SUCCESS 0
@@ -64,87 +66,104 @@ int load_file(const char* file_name, char** compressed_file_string, int* file_le
 }
 
 //Returns the number of read bits
-fn get_char(bytes: &Vec<u8>, huff_tree: &HuffmanCompression, byte_to_read: &mut usize, read_bits: u8,
-decompressed_file: &mut String) -> u8 {
-let mut aux_byte: u8;
-let mut was_letter_decoded = false;
-let mut tree_code: String = String::from("");
-let mut _read_bits: u8 = read_bits;
-
-while !was_letter_decoded {
-//Gets the corresponding bit
-aux_byte = (bytes[*byte_to_read] << read_bits) >> (read_bits + BITS_PER_BYTE - (read_bits + 1));
-
-tree_code.push(std::char::from_u32(aux_byte as u32).expect("Invalid number for tree code"));
-_read_bits += 1;
-match huff_tree.decode(&tree_code) {
-Some(letter) => {
-decompressed_file.push(letter);
-was_letter_decoded = true;
-},
-None => {},
-}
-if _read_bits == BITS_PER_BYTE {
-_read_bits = 0;
-(*byte_to_read) += 1;
-}
-}
-return _read_bits;
-}
-
-char get_char(const char* compressed_file_string, huff_tree: &HuffmanCompression, int* byte_to_read, char read_bits,
-              bytes_vector_t* decompressed_file) -> u8 {
-
-}
-int execute_decompression(const char* file_name, const char* compressed_file_string, int compressed_file_len) {
-    char padding_bits = compressed_file_string[0];
-    int byte_to_read = 1;
-    int read_bits = 0;
-    char last_byte_read_bits = 0;
-
-    //CREAR EL HUFF_TREE
-
-    bytes_vector_t decompressed_file_text;
-    if (bytes_vector_init(&decompressed_file_text) != SUCCESS) {
+int get_char(const char* compressed_file_string, const huffman_compression_t* huff_tree,
+              int* byte_to_read, char* read_bits, bytes_vector_t* decompressed_file) {
+    char aux_byte, decoded_char;
+    bool was_letter_decoded = false;
+    bytes_vector_t tree_code;
+    if (bytes_vector_init(&tree_code) != 0) {
         return MEMORY_ERROR;
     }
 
+    while (!was_letter_decoded) {
+        aux_byte = (compressed_file_string[*byte_to_read] << (*read_bits)) >>
+                    (*read_bits + BITS_PER_BYTE - (*read_bits + 1));
+        if (bytes_vector_add_byte(&tree_code, aux_byte + '0') != 0) {
+            return MEMORY_ERROR;
+        }
+
+        *read_bits += 1;
+        decoded_char = huffman_compression_decode(huff_tree, bytes_vector_get_ptr(&tree_code));
+        if (decoded_char != -1) {
+            if (bytes_vector_add_byte(&tree_code, decoded_char) != 0) {
+                return MEMORY_ERROR;
+            }
+            was_letter_decoded = true;
+        }
+        if (*read_bits == BITS_PER_BYTE) {
+            *read_bits = 0;
+            (*byte_to_read) += 1;
+        }
+    }
+
+    return SUCCESS;
+}
+
+int execute_decompression(const char* file_name, const char* compressed_file_string, int compressed_file_len) {
+    char padding_bits = compressed_file_string[0];
+    int byte_to_read = 1;
+    int last_byte_to_read = 1;
+    char read_bits = 0;
+    char last_byte_read_bits = 0;
+    huffman_compression_t huffman;
+    if (huffman_compression_init(&huffman) != 0) {
+        return MEMORY_ERROR;
+    }
+    bytes_vector_t decompressed_file_text;
+    if (bytes_vector_init(&decompressed_file_text) != SUCCESS) {
+        huffman_compression_release(&huffman);
+        return MEMORY_ERROR;
+    }
     while (byte_to_read < compressed_file_len) {
-        read_bits = get_char(&compressed_file, &mut byte_to_read, read_bits,
-                &mut decompressed_file_text);
-        if byte_to_read == last_byte_to_read {
+        if (get_char(compressed_file_string, &huffman, &byte_to_read, &read_bits,
+                     &decompressed_file_text) != SUCCESS) {
+            bytes_vector_release(&decompressed_file_text);
+            huffman_compression_release(&huffman);
+            return MEMORY_ERROR;
+        }
+        if (byte_to_read == last_byte_to_read) {
             last_byte_read_bits += read_bits;
         } else {
             last_byte_read_bits = 0;
         }
         last_byte_to_read = byte_to_read;
-        if byte_to_read == (compressed_file.len() - 1) {
-            if (BITS_PER_BYTE - last_byte_read_bits) == padding_bits {
+        if (byte_to_read == (compressed_file_len - 1)) {
+            if ((BITS_PER_BYTE - last_byte_read_bits) == padding_bits) {
                 byte_to_read += 1;
             }
         }
     }
 
-    if (bytes_vector_release(&decompressed_file_text) != SUCCESS) {
-        return MEMORY_ERROR;
-    }
+    //crear archivo y escribirlo
 
-    //DESTRUIR EL HUFFMAN TREE
-
+    bytes_vector_release(&decompressed_file_text);
+    huffman_compression_release(&huffman);
     return SUCCESS;
 }
 
+int write_to_file(const char* file_name, const bytes_vector_t* decompressed_file_text) {
+    bytes_vector_t decompressed_name;
+    if (bytes_vector_init(&decompressed_name) != 0) {
+        return MEMORY_ERROR;
+    }
+    long file_name_end = strstr(file_name, EXTENSION_CHAR) - file_name;
+    for (int i = 0; i < file_name_end; ++i) {
+        if (bytes_vector_add_byte(&decompressed_name, file_name[file_name_end]) != 0) {
+            bytes_vector_release(&decompressed_name);
+            return MEMORY_ERROR;
+        }
+    }
+    FILE* decompressed_file = fopen(bytes_vector_get_ptr(&decompressed_name), "w");
 
+    //SEGUIR IMPLEMENTANDO FUNCION
+
+    return SUCCESS;
+}
 
 int decompress_file(const char* file_name) {
     if (!is_file_name_valid(file_name)) {
         return BAD_FILE_NAME;
     }
-
-    //Hacer que el struct este en el .h para que se pueda guardar en el stack
-    //huffman_compression_t tree
-
-    huffman_tree_decode();
     char* compressed_file_string;
     int file_len = 0;
     int program_status = load_file(file_name, &compressed_file_string, &file_len);
@@ -152,11 +171,11 @@ int decompress_file(const char* file_name) {
         free(compressed_file_string);
         return program_status;
     }
-
-    //llamar a execute_decompression
     program_status = execute_decompression(file_name, compressed_file_string, file_len);
-
-
+    if (program_status != SUCCESS) {
+        free(compressed_file_string);
+        return program_status;
+    }
     //Pasar a una funcion que lo libera para que el programa quede simetrico
     free(compressed_file_string);
 
