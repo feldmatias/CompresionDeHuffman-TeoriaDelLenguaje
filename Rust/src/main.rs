@@ -26,6 +26,7 @@ fn main() {
     }
     */
 
+    //compression::compress_file(&String::from("test.huffman"));
     //decompression::decompress_file(&String::from("test.huffman"));
 
     //let huffman = HuffmanCompression::new();
