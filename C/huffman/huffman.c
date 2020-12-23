@@ -27,7 +27,7 @@ bytes_vector_t* huffman_compression_encode(const huffman_compression_t* self, ch
         fprintf(stderr, "Could not allocate memory for the tree code!");
         exit(1);
     }
-    for (unsigned long i = strlen(code_ptr) - 1; i >= 0; --i) {
+    for (int i = (int)strlen(code_ptr) - 1; i >= 0; --i) {
         bytes_vector_add_byte(tree_code, *(code_ptr + i));
     }
     bytes_vector_add_byte(tree_code, '\0');
