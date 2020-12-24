@@ -1,3 +1,5 @@
+#![allow(warnings, unused)]
+
 use crate::huffman::HuffmanCompression;
 use std::env;
 
@@ -33,6 +35,6 @@ fn main() {
             panic!("Incorrect argument");
         }
     } else {
-        panic!("Invalid amount of arguments")
+        println!("Compilado con exito")
     }
 }

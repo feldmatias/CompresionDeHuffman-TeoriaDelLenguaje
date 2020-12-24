@@ -1,3 +1,5 @@
+#![allow(warnings, unused)]
+
 use crate::huffman::huffman_tree::HuffmanTree;
 
 mod huffman_node;

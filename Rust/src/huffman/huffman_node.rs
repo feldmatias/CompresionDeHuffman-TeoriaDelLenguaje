@@ -1,3 +1,5 @@
+#![allow(warnings, unused)]
+
 pub struct HuffmanNode {
     letter: char,
     weight: i32,
