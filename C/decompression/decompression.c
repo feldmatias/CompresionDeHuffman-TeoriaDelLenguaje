@@ -43,13 +43,14 @@ static bool _is_file_name_valid(const char* file_name) {
     return (extension_ptr - file_name) + strlen(extension_ptr) == strlen(file_name);
 }
 
-static int _load_file(const char* file_name, char** compressed_file_string, int* file_len) {
+static int _load_file(const char* file_name, char** compressed_file_string, long* file_len) {
     FILE* compressed_file = fopen(file_name, "r");
     if (!compressed_file) {
         return FILE_ERROR;
     }
     fseek(compressed_file, 0, SEEK_END);
     long compressed_file_size = ftell(compressed_file);
+    *file_len = compressed_file_size;
     *compressed_file_string = malloc(sizeof(char) * (compressed_file_size + 1));
     if (!*compressed_file_string) {
         fclose(compressed_file);
@@ -69,7 +70,7 @@ static int _load_file(const char* file_name, char** compressed_file_string, int*
 
 static int _get_char(const char* compressed_file_string, const huffman_compression_t* huff_tree,
               int* byte_to_read, char* read_bits, bytes_vector_t* decompressed_file) {
-    unsigned char aux_byte, decoded_char;
+    char aux_byte, decoded_char;
     bool was_letter_decoded = false;
     bytes_vector_t tree_code;
     if (bytes_vector_init(&tree_code) != 0) {
@@ -191,7 +192,7 @@ int decompress_file(const char* file_name) {
         return BAD_FILE_NAME;
     }
     char* compressed_file_string;
-    int file_len = 0;
+    long file_len = 0;
     int program_status = _load_file(file_name, &compressed_file_string, &file_len);
     if (program_status != SUCCESS) {
         free(compressed_file_string);
