@@ -69,7 +69,7 @@ static int _load_file(const char* file_name, char** compressed_file_string, int*
 
 static int _get_char(const char* compressed_file_string, const huffman_compression_t* huff_tree,
               int* byte_to_read, char* read_bits, bytes_vector_t* decompressed_file) {
-    char aux_byte, decoded_char;
+    unsigned char aux_byte, decoded_char;
     bool was_letter_decoded = false;
     bytes_vector_t tree_code;
     if (bytes_vector_init(&tree_code) != 0) {
@@ -77,7 +77,7 @@ static int _get_char(const char* compressed_file_string, const huffman_compressi
     }
 
     while (!was_letter_decoded) {
-        aux_byte = (compressed_file_string[*byte_to_read] << (*read_bits)) >>
+        aux_byte = (unsigned char)(compressed_file_string[*byte_to_read] << (*read_bits)) >>
                     (*read_bits + BITS_PER_BYTE - (*read_bits + 1));
         if (bytes_vector_add_byte(&tree_code, aux_byte + '0') != 0) {
             return MEMORY_ERROR;
@@ -159,6 +159,7 @@ static int _build_decompressed_string(const char* compressed_file_string,
             }
         }
     }
+    return SUCCESS;
 }
 
 static int _execute_decompression(const char* file_name, const char* compressed_file_string, int compressed_file_len) {
