@@ -71,8 +71,7 @@ int huffman_tree_init(huffman_tree_t *tree) {
 }
 
 char huffman_tree_get_letter(const huffman_tree_t* self, const char* tree_code) {
-    unsigned long code_length = strlen(tree_code); //since we have to read backwards, we need to know how long the string is
-    return huffman_node_get_letter(self->root, tree_code + code_length - 1, code_length);
+    return huffman_node_get_letter(self->root, tree_code);
 }
 
 bytes_vector_t* huffman_tree_get_code(const struct huffman_tree* self, char letter) {

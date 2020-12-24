@@ -20,7 +20,7 @@ bool huffman_node_is_leaf(const huffman_node_t *node);
  * Given a code, it returns it's associated letter. If the code corresponds to a non-leaf node
  * (therefore it does not contain a letter) then it returns -1.
  */
-char huffman_node_get_letter(const huffman_node_t* self, const char* tree_code_it, unsigned long length);
+char huffman_node_get_letter(const huffman_node_t* self, const char* tree_code_it);
 
 /*
  * Recursively travels the tree in a CLR (center-left-right) manner until it finds (if it exists)

@@ -1,6 +1,9 @@
-#include <stdlib.h>
 #include "huffman.h"
 #include "huffman_tree.h"
+#include "../decompression/bytes_vector/bytes_vector.h"
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #define SUCCESS 0
 #define MEMORY_ERROR -1
@@ -17,7 +20,19 @@ char huffman_compression_decode(const huffman_compression_t* self, const char* t
 }
 
 bytes_vector_t* huffman_compression_encode(const huffman_compression_t* self, char letter) {
-    return huffman_tree_get_code(&self->tree, letter);
+    bytes_vector_t* reverse_tree_code = huffman_tree_get_code(&self->tree, letter);
+    const char* code_ptr = bytes_vector_get_ptr(reverse_tree_code);
+    bytes_vector_t* tree_code = calloc(1, sizeof(bytes_vector_t));
+    if (!tree_code || bytes_vector_init(tree_code)) {
+        fprintf(stderr, "Could not allocate memory for the tree code!");
+        exit(1);
+    }
+    for (int i = (int)strlen(code_ptr) - 1; i >= 0; --i) {
+        bytes_vector_add_byte(tree_code, *(code_ptr + i));
+    }
+    bytes_vector_add_byte(tree_code, '\0');
+    bytes_vector_release(reverse_tree_code);
+    return tree_code;
 }
 
 void huffman_compression_release(huffman_compression_t *huffman) {

@@ -70,17 +70,15 @@ bool huffman_node_is_leaf(const huffman_node_t *node) {
  * Given a code, it returns it's associated letter. If the code corresponds to a non-leaf node
  * (therefore it does not contain a letter) then it returns -1.
  */
-char huffman_node_get_letter(const huffman_node_t* self, const char* tree_code_it, unsigned long length) {
+char huffman_node_get_letter(const huffman_node_t* self, const char* tree_code_it) {
     if (huffman_node_is_leaf(self)) {
         return self->letter;
     } else {
-        if (length > 0) {
-            length--;
-            const char* it = tree_code_it - 1;
-            if (*it == '0') {
-                return huffman_node_get_letter(self->left, it, length);
+        if (*tree_code_it != '\0') {
+            if (*tree_code_it == '0') {
+                return huffman_node_get_letter(self->left, ++tree_code_it);
             } else { //'1'
-                return huffman_node_get_letter(self->right, it, length);
+                return huffman_node_get_letter(self->right, ++tree_code_it);
             }
         } else {
             return -1;

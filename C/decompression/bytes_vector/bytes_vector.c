@@ -29,7 +29,6 @@ int bytes_vector_add_byte(bytes_vector_t* self, char byte) {
     self->vec[self->len] = byte;
     self->len++;
     self->vec[self->len] = 0;
-    self->size *= 2;
     return SUCCESS;
 }
 
