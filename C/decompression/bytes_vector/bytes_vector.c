@@ -24,6 +24,7 @@ int bytes_vector_add_byte(bytes_vector_t* self, char byte) {
             return MEMORY_ERROR;
         } else {
             self->vec = aux_ptr;
+            self->size *= 2;
         }
     }
     self->vec[self->len] = byte;

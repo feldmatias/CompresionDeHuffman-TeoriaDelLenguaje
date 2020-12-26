@@ -194,6 +194,9 @@ int decompress_file(const char* file_name) {
     char* compressed_file_string;
     long file_len = 0;
     int program_status = _load_file(file_name, &compressed_file_string, &file_len);
+
+    //Esto falla si no se pudo llegar a alocar la memoria para el string (ej: no se puede
+    //abrir el archivo)
     if (program_status != SUCCESS) {
         free(compressed_file_string);
         return program_status;
