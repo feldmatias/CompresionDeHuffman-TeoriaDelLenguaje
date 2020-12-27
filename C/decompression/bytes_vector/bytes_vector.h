@@ -22,4 +22,6 @@ int bytes_vector_len(const bytes_vector_t* self);
 
 void bytes_vector_release(bytes_vector_t* self);
 
+void bytes_vector_replace_byte(bytes_vector_t* self, int pos, char replacement);
+
 #endif //C_BYTES_VECTOR_H

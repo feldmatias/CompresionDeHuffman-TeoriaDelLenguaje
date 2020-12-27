@@ -44,3 +44,7 @@ int bytes_vector_len(const bytes_vector_t* self) {
 void bytes_vector_release(bytes_vector_t* self) {
     free(self->vec);
 }
+
+void bytes_vector_replace_byte(bytes_vector_t* self, int pos, char replacement) {
+    if (pos < self->size) self->vec[pos] = replacement;//Ver si devuelvo un error o no hago nada
+}

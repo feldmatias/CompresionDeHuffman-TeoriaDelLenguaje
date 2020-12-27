@@ -25,124 +25,127 @@ char string_to_char(const bytes_vector_t* byte_buffer) {
     return c;
 }
 
+void add_bytes(bytes_vector_t* bytes_vector_to, bytes_vector_t* bytes_vector_from, int len) {
+    const char* code_ptr = bytes_vector_get_ptr(bytes_vector_from);
+    for (int i = 0; i < len; ++i) {
+        bytes_vector_add_byte(bytes_vector_to, *(code_ptr + i));
+    }
+}
+
+void add_compression_byte(bytes_vector_t * byte_buffer, bytes_vector_t * compression_vec) {
+    char curr_char = string_to_char(byte_buffer);
+    bytes_vector_add_byte(compression_vec, curr_char);
+    bytes_vector_release(byte_buffer);
+    bytes_vector_init(byte_buffer);
+}
+
 //Hacer q devuelva int como codigo de error
 void process_code(char* bits_left, bytes_vector_t* byte_buffer, bytes_vector_t* code, bytes_vector_t* compression_vec) {
-    bool finished_char = false;
+    bool finished_code = false;
     char code_len = (char)bytes_vector_len(code) - 1;//Uso char porque no va a haber codigos de mas de 256 caracteres
     int index = 0;
     const char* code_ptr = bytes_vector_get_ptr(code);
 
-    while (!finished_char) {
+    while (!finished_code) {
         if (*bits_left - code_len >= 0) {
             *bits_left -= code_len;
-            //byte_buffer.push_str(code);
-            for (int i = 0; i < code_len; ++i) {
-                bytes_vector_add_byte(byte_buffer, *(code_ptr + i));
-            }
-            finished_char = true;
+            add_bytes(byte_buffer, code, code_len);
+            finished_code = true;
         } else if (*bits_left - code_len < 0) {
-            //aux = code.get(0..*bits_left as usize).unwrap();
-            //byte_buffer.push_str(aux);
-
-            for (int i = 0; i < *bits_left; ++i) {
-                bytes_vector_add_byte(byte_buffer, *(code_ptr + i));
-            }
+            add_bytes(byte_buffer, code, *bits_left);
             index += *bits_left;
-            //*code = code.get(*bits_left as usize..code_len as usize).unwrap().to_string();
-            bytes_vector_t aux;
-            bytes_vector_init(&aux);//chequear error de memoria aca
+
             for (int i = 0; i < code_len - *bits_left; ++i) {
-                bytes_vector_add_byte(&aux, *(code_ptr + index + i));
+                bytes_vector_replace_byte(code, i, *(code_ptr + index + i));
             }
-            bytes_vector_release(code);
-            bytes_vector_init(code);
-            const char* aux_ptr = bytes_vector_get_ptr(&aux);
-            for (int i = 0; i < code_len - *bits_left; ++i) {
-                bytes_vector_add_byte(code, *(aux_ptr + i));
-            }
-            bytes_vector_release(&aux);
-            code_len = (char)bytes_vector_len(code);
+            code_len -= *bits_left;
             code_ptr = bytes_vector_get_ptr(code);
             index = 0;
             *bits_left = 0;
         }
         if (*bits_left == 0) {
-            char curr_char = string_to_char(byte_buffer);
-            bytes_vector_add_byte(compression_vec, curr_char);
-            bytes_vector_release(byte_buffer);
-            bytes_vector_init(byte_buffer);
+            add_compression_byte(byte_buffer, compression_vec);
             *bits_left = 8;
         }
     }
 }
 
-int execute_compression(FILE** file) {
+void add_padding(const char* bits_left, bytes_vector_t* byte_buffer, bytes_vector_t* compression_vec) {
+    for (int i = 0; i < *bits_left; ++i) {
+        bytes_vector_add_byte(byte_buffer, '0');
+    }
+    char curr_char = string_to_char(byte_buffer);
+    bytes_vector_add_byte(compression_vec, curr_char);
+
+    bytes_vector_replace_byte(compression_vec,0, *bits_left);//Ver si chequeo error
+}
+
+int process_file(const char* file_name, bytes_vector_t* compression_vec, char* bits_left) {
+    FILE* file_to_compress = fopen(file_name, "r");
+    if (!file_to_compress) return -2;//Could not open file
+
     huffman_compression_t huffman;
     if (huffman_compression_init(&huffman) != 0) return -3;//Memory Error
 
-    bytes_vector_t compression_vec;
-    if (bytes_vector_init(&compression_vec) != 0) {
-        huffman_compression_release(&huffman);
-        return -3;
-    }
-
     bytes_vector_t byte_buffer;
-    if (bytes_vector_init(&byte_buffer) != 0) {
-        huffman_compression_release(&huffman);
-        return -3;
-    }
+    if (bytes_vector_init(&byte_buffer) != 0) return -3;
 
-    char bits_left = 8;//Uso char porque int es demasiado grande
-    char c = (char)getc(*file);
+    char c = (char)getc(file_to_compress);
     bytes_vector_t* code;
 
-    while (!feof(*file)) {
+    while (!feof(file_to_compress)) {
         code = huffman_compression_encode(&huffman, c);//Esto me esta devolviendo un bytes_vector de tamaño 320
         if (!code) return -4;//Letra inexistente
-        process_code(&bits_left, &byte_buffer, code, &compression_vec);
-        c = (char)getc(*file);
+        process_code(bits_left, &byte_buffer, code, compression_vec);
+        c = (char)getc(file_to_compress);
         bytes_vector_release(code);
         free(code);
     }
 
-    //padding;
-    for (int i = 0; i < bits_left; ++i) {
-        bytes_vector_add_byte(&byte_buffer, '0');
-    }
-    char curr_char = string_to_char(&byte_buffer);
-    bytes_vector_add_byte(&compression_vec, curr_char);
+    add_padding(bits_left, &byte_buffer, compression_vec);
 
-    //Toda esta parte cambiarla por una funcion en bytes vector que me deje cambiar un solo byte
-    bytes_vector_t aux;
-    bytes_vector_init(&aux);
-    const char* vec_ptr = bytes_vector_get_ptr(&compression_vec);
-    bytes_vector_add_byte(&aux, bits_left);
-    for (int i = 0; i < bytes_vector_len(&compression_vec); ++i) {
-        bytes_vector_add_byte(&aux, *(vec_ptr + i));
-    }
-
-    FILE* compressed = fopen("compressed.huffman", "w");
-    vec_ptr = bytes_vector_get_ptr(&aux);
-    fwrite(vec_ptr, sizeof(char), bytes_vector_len(&aux), compressed);
-    fclose(compressed);
-
-    //write_to_file();
-    bytes_vector_release(&aux);
     bytes_vector_release(&byte_buffer);
     huffman_compression_release(&huffman);
-    bytes_vector_release(&compression_vec);
+    fclose(file_to_compress);
+}
+
+int write_to_file(const char* file_name, bytes_vector_t* compression_vec) {
+    bytes_vector_t compressed_file_name;
+    if (bytes_vector_init(&compressed_file_name) != 0) return -1;
+
+    for (int i = 0; i < strlen(file_name) - 4; ++i) {
+        bytes_vector_add_byte(&compressed_file_name, *(file_name + i));
+    }
+
+    const char* compressed_extension = ".huffman";
+    for (int i = 0; i < strlen(compressed_extension); ++i) {
+        bytes_vector_add_byte(&compressed_file_name, *(compressed_extension + i));
+    }
+
+    FILE* compressed = fopen(bytes_vector_get_ptr(&compressed_file_name), "w");
+    const char* vec_ptr = bytes_vector_get_ptr(compression_vec);
+    fwrite(vec_ptr, sizeof(char), bytes_vector_len(compression_vec), compressed);
+    bytes_vector_release(&compressed_file_name);
+    fclose(compressed);
 }
 
 int compress_file(const char* file_name) {
     if(!valid_file_extension(file_name)) return -1;//Invalid Extension
 
-    FILE* file_to_compress = fopen(file_name, "r");
-    if (!file_to_compress) return -2;//Could not open file
+    bytes_vector_t compression_vec;
+    if (bytes_vector_init(&compression_vec) != 0) return -3;
+    bytes_vector_add_byte(&compression_vec, '0');//Aca despues meto la cantidad de bits de padding
 
-    execute_compression(&file_to_compress);
+    char bits_left = 8;//Uso char porque int es demasiado grande
 
-    fclose(file_to_compress);//Esto se podria comentar para mostrar el leak
+    int status = process_file(file_name, &compression_vec, &bits_left);
+    if (status != 0){
+        bytes_vector_release(&compression_vec);
+        return -4;//algun error
+    }
 
-    printf("listo");
+    write_to_file(file_name, &compression_vec);
+
+    bytes_vector_release(&compression_vec);
     return 0;
 }
