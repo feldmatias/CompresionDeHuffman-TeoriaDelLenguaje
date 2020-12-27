@@ -81,12 +81,14 @@ static int _get_char(const char* compressed_file_string, const huffman_compressi
         aux_byte = (unsigned char)(compressed_file_string[*byte_to_read] << (*read_bits)) >>
                     (*read_bits + BITS_PER_BYTE - (*read_bits + 1));
         if (bytes_vector_add_byte(&tree_code, aux_byte + '0') != 0) {
+            bytes_vector_release(&tree_code);
             return MEMORY_ERROR;
         }
         *read_bits += 1;
         decoded_char = huffman_compression_decode(huff_tree, bytes_vector_get_ptr(&tree_code));
         if (decoded_char != -1) {
             if (bytes_vector_add_byte(decompressed_file, decoded_char) != 0) {
+                bytes_vector_release(&tree_code);
                 return MEMORY_ERROR;
             }
             was_letter_decoded = true;
