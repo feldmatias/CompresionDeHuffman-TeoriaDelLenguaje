@@ -32,6 +32,7 @@ bytes_vector_t* huffman_compression_encode(const huffman_compression_t* self, ch
     }
     bytes_vector_add_byte(tree_code, '\0');
     bytes_vector_release(reverse_tree_code);
+    free(reverse_tree_code);
     return tree_code;
 }
 

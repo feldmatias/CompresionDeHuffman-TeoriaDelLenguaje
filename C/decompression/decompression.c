@@ -96,6 +96,7 @@ static int _get_char(const char* compressed_file_string, const huffman_compressi
             (*byte_to_read) += 1;
         }
     }
+    bytes_vector_release(&tree_code);
     return SUCCESS;
 }
 

@@ -63,6 +63,7 @@ void process_code(char* bits_left, bytes_vector_t* byte_buffer, bytes_vector_t* 
             bytes_vector_release(&aux);
             code_len = (char)bytes_vector_len(code);
             code_ptr = bytes_vector_get_ptr(code);
+            index = 0;
             *bits_left = 0;
         }
         if (*bits_left == 0) {
