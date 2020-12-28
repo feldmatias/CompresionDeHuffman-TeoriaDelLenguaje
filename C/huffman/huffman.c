@@ -21,6 +21,7 @@ char huffman_compression_decode(const huffman_compression_t* self, const char* t
 
 bytes_vector_t* huffman_compression_encode(const huffman_compression_t* self, char letter) {
     bytes_vector_t* reverse_tree_code = huffman_tree_get_code(&self->tree, letter);
+    if (!reverse_tree_code) return NULL;
     const char* code_ptr = bytes_vector_get_ptr(reverse_tree_code);
     bytes_vector_t* tree_code = calloc(1, sizeof(bytes_vector_t));
     if (!tree_code || bytes_vector_init(tree_code)) {
