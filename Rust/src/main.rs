@@ -16,7 +16,6 @@ const COMPRESS_ARG: &str = "compress";
 const PRINT_TREE: &str = "print";
 
 fn main() {
-
     let args: Vec<String> = env::args().collect();
 
     if args.len() == PRINT_TREE_ARGS_AMOUNT {

@@ -68,7 +68,6 @@ impl HuffmanTree {
      */
     pub fn get_code(&self, letter: char) -> Result<String, InexistentLetterError> {
         return match self.root.get_code(letter) {
-            //Ok(code) => code.graphemes(true).rev().collect(),
             Ok(code) => Ok(code.chars().rev().collect::<String>()),
             Err(_) => Err(InexistentLetterError),
         }

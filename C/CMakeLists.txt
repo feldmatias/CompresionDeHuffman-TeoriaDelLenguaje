@@ -12,6 +12,6 @@ add_executable(HuffmanCompression main.c huffman/huffman_node.h huffman/huffman_
                decompression/bytes_vector/bytes_vector.h
                compression/compression.c compression/compression.h)
 
-target_compile_options(HuffmanCompression PRIVATE -O0 -ggdb)
+target_compile_options(HuffmanCompression PRIVATE -O3 -ggdb)
 
 target_link_libraries(HuffmanCompression PRIVATE -lm)
