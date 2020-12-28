@@ -82,7 +82,10 @@ void add_padding(const char* bits_left, bytes_vector_t* byte_buffer, bytes_vecto
 
 int process_file(const char* file_name, bytes_vector_t* compression_vec, char* bits_left) {
     FILE* file_to_compress = fopen(file_name, "r");
-    if (!file_to_compress) return -2;//Could not open file
+    if (!file_to_compress) {
+        fprintf(stderr, "Could not open file, check if it exists in the directory of the binary!");
+        return -2;//Could not open file
+    }
 
     huffman_compression_t huffman;
     if (huffman_compression_init(&huffman) != 0) return -3;//Memory Error
@@ -130,10 +133,16 @@ int write_to_file(const char* file_name, bytes_vector_t* compression_vec) {
 }
 
 int compress_file(const char* file_name) {
-    if(!valid_file_extension(file_name)) return -1;//Invalid Extension
+    if(!valid_file_extension(file_name)) {
+        fprintf(stderr, "Invalid file extension! It must be .txt");
+        return -1;//Invalid Extension
+    }
 
     bytes_vector_t compression_vec;
-    if (bytes_vector_init(&compression_vec) != 0) return -3;
+    if (bytes_vector_init(&compression_vec) != 0) {
+        fprintf(stderr, "Memory error!");
+        return -3;
+    }
     bytes_vector_add_byte(&compression_vec, '0');//Aca despues meto la cantidad de bits de padding
 
     char bits_left = 8;//Uso char porque int es demasiado grande
@@ -141,6 +150,7 @@ int compress_file(const char* file_name) {
     int status = process_file(file_name, &compression_vec, &bits_left);
     if (status != 0){
         bytes_vector_release(&compression_vec);
+        fprintf(stderr, "Unknown error when processing file!");
         return -4;//algun error
     }
 
