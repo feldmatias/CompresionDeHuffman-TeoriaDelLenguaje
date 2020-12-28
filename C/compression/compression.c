@@ -83,7 +83,7 @@ void add_padding(const char* bits_left, bytes_vector_t* byte_buffer, bytes_vecto
 int process_file(const char* file_name, bytes_vector_t* compression_vec, char* bits_left) {
     FILE* file_to_compress = fopen(file_name, "r");
     if (!file_to_compress) {
-        fprintf(stderr, "Could not open file, check if it exists in the directory of the binary!");
+        fprintf(stderr, "Could not open file, check if it exists in the directory of the binary!\n");
         return -2;//Could not open file
     }
 
@@ -98,7 +98,10 @@ int process_file(const char* file_name, bytes_vector_t* compression_vec, char* b
 
     while (!feof(file_to_compress)) {
         code = huffman_compression_encode(&huffman, c);//Esto me esta devolviendo un bytes_vector de tamaño 320
-        if (!code) return -4;//Letra inexistente
+        if (!code) {
+            fprintf(stderr, "Inexistent letter! Check file's letter frequencies\n");
+            return -4;//Letra inexistente
+        }
         process_code(bits_left, &byte_buffer, code, compression_vec);
         c = (char)getc(file_to_compress);
         bytes_vector_release(code);
